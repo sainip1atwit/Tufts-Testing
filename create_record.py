@@ -58,7 +58,7 @@ finally:
 
             use_type.select_by_visible_text('Clinical/Hospital')
             managed_by.send_keys('sschad01')
-            serial_number.send_keys('XXXXXXX')
+            serial_number.send_keys('XXXXXXX') 
 
         finally:
             # Click Submit
