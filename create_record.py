@@ -5,7 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from dotenv import load_dotenv
-import timeunit
+from selenium.webdriver.support.select import Select
 
 # Load the .env file
 load_dotenv()
@@ -42,6 +42,27 @@ finally:
         )
         dont_trust.click()
     finally:
-        # 30 seconds until driver closes
+        # Play Around With Form Entries
+        try:
+            model_id = WebDriverWait(driver, 30).until(
+                EC.presence_of_element_located((By.XPATH, '//*[@id="sys_display.alm_hardware.model"]'))
+            )
+            # Usual Model for Hospital Refresh
+            model_id.send_keys('Dell Dell Pro Micro Plus QBM1250')
+            
+            # Other Form Entries
+            use_type_elem = driver.find_element(By.XPATH, '//*[@id="alm_hardware.u_use_type"]')
+            use_type = Select(use_type_elem)
+            managed_by = driver.find_element(By.XPATH, '//*[@id="sys_display.alm_hardware.managed_by"]')
+            serial_number = driver.find_element(By.XPATH, '//*[@id="alm_hardware.serial_number"]')
+
+            use_type.select_by_visible_text('Clinical/Hospital')
+            managed_by.send_keys('sschad01')
+            serial_number.send_keys('XXXXXXX')
+
+        finally:
+            # Click Submit
+            time.sleep(30)
+
+
         time.sleep(30)
-        driver.quit()
