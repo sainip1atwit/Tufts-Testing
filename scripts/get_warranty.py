@@ -35,7 +35,6 @@ def get_warranty():
 
     # Iterate through dataframe rows
     for index, row in df.iterrows():
-        print(f"Index: {index}, Serial: {row['Serial Number']}")
 
         # Get form values from row
         manufacturer = row['Manufacturer']
