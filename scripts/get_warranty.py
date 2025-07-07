@@ -56,7 +56,7 @@ def get_warranty():
         except NoSuchElementException:
             # if there is not a table element, resubmit until there is
             # Only runs 3 times
-            while(not output and counter < 3):
+            while(not output and counter < 2):
                 try:
                     driver.refresh()
                     submit_form(driver, manufacturer, serial_number, model_number)
