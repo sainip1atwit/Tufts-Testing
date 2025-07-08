@@ -1,12 +1,11 @@
 import time
 import pandas as pd
 import subprocess
+from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
 from selenium.common.exceptions import NoSuchElementException
-
-ERROR_STRING = 'Lookup Warranty was unable to find warranty information for the serial number you provided.'
 
 # Helper function to submit computer information
 def submit_form(driver, man, serial_no, model_no):
@@ -24,6 +23,10 @@ def submit_form(driver, man, serial_no, model_no):
     serial.send_keys(serial_no)
     model.send_keys(model_no)
     submit.click()
+
+def format_date(date):
+    new_date = datetime.strptime(date, '%B %d, %Y')
+    return new_date.strftime('%m-%d-%Y')
 
 def get_warranty():
     # Load Excel Sheet
@@ -54,12 +57,12 @@ def get_warranty():
 
         except NoSuchElementException:
             # if there is not a table element, resubmit until there is
-            # Only runs 3 times
-            while(not output and counter < 2):
+            # Only runs 5 times
+            while(not output and counter < 5):
                 try:
                     driver.refresh()
                     submit_form(driver, manufacturer, serial_number, model_number)
-                    time.sleep(5)
+                    time.sleep(3)
                     output = driver.find_element(By.XPATH, '//*[@id="output"]/table')
                 except NoSuchElementException:
                     output = None
@@ -67,8 +70,9 @@ def get_warranty():
 
         # If warranty information was found, add warranty dates
         try:
-            warranty_start = driver.find_element(By.XPATH, '//*[@id="output"]/table/tbody/tr[3]/td[2]').text
-            warranty_end = driver.find_element(By.XPATH, '//*[@id="output"]/table/tbody/tr[4]/td[2]').text
+            # Make sure the dates are the way TechConnect expects it
+            warranty_start = format_date(driver.find_element(By.XPATH, '//*[@id="output"]/table/tbody/tr[3]/td[2]').text)
+            warranty_end = format_date(driver.find_element(By.XPATH, '//*[@id="output"]/table/tbody/tr[4]/td[2]').text)
         # If no warranty info was found, add blank strings (SHOW MUST GO ON)
         except NoSuchElementException:
             warranty_start = ""
