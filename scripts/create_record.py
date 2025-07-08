@@ -31,30 +31,32 @@ password.send_keys(os.getenv('TUFTSPASS'))
 submit.click()
 
 # Catch 'Skip For Now' Element in new page
-'''skip_for_now = WebDriverWait(driver, 30).until(
+skip_for_now = WebDriverWait(driver, 30).until(
     EC.presence_of_element_located((By.XPATH, '/html/body/div/div/div/div[3]/div/button'))
 )
-skip_for_now.click()'''
+skip_for_now.click()
 
 # Catch 'Don't Trust Browser' Element
 dont_trust = WebDriverWait(driver, 30).until(
     EC.presence_of_element_located((By.XPATH, '//*[@id="dont-trust-browser-button"]'))
 )
 dont_trust.click()
-time.sleep(5)
 
+# Keeping the comments, they are hilarious
 #[!]WTF Shadow-root BS might be worse than iframe nonsense.
 # Shadow host is top level shadow root object (find by CSS only)
-shadow_host = driver.find_element(By.CSS_SELECTOR, 'body > macroponent-f51912f4c700201072b211d4d8c26010')
+shadow_host = WebDriverWait(driver, 5).until(
+    EC.presence_of_element_located((By.CSS_SELECTOR, 'body > macroponent-f51912f4c700201072b211d4d8c26010'))
+)
 time.sleep(3)
 shadow_root = shadow_host.shadow_root
 
-time.sleep(3)
 #[!]switch to the proper iframe (iframes suck); in this case the whole inner page is an iframe, remember this!
 # Worth noting that only new way of finding elements (find_element(By.Something, 'something')) works with shadowDOM methods
-iframe = shadow_root.find_element(By.ID, 'gsft_main')
+iframe = WebDriverWait(shadow_root, 5).until(
+    EC.presence_of_element_located((By.ID, 'gsft_main'))
+)
 driver.switch_to.frame(iframe)
-time.sleep(3)
 
 # Tabs
 contracts = driver.find_element(By.XPATH, '//*[@id="tabs2_section"]/span[4]/span[1]')
@@ -100,11 +102,36 @@ contracts.click()
 warranty_start.send_keys('07-07-2025')
 warranty_end.send_keys('07-07-2028')
 
-# Right Click Nav Bar
+# Save Record
 action = ActionChains(driver)
 action.context_click(nav_bar).perform()
 save = WebDriverWait(driver, 3).until(
     EC.presence_of_element_located((By.XPATH, '//*[@id="context_1"]/div[2]'))
 )
+save.click()
+
+# Open Configuration Item Page
+config_button = WebDriverWait(driver, 5).until(
+    EC.presence_of_element_located((By.XPATH, '//*[@id="viewr.alm_hardware.ci"]'))
+)
+config_button.click()
+open_record = WebDriverWait(driver, 5).until(
+    EC.presence_of_element_located((By.XPATH, '//*[contains(text(), "Open Record")]'))
+)
+open_record.click()
+time.sleep(3)
+
+# Change Configuration Item Name
+config_name = WebDriverWait(driver, 5).until(
+    EC.presence_of_element_located((By.XPATH, '//*[@id="cmdb_ci_computer.name"]'))
+)
+config_name.clear()
+config_name.send_keys('GVHOSL99999')
+
+# Update the Record
+update_button = driver.find_element(By.XPATH, '//*[@id="sysverb_update"]')
+update_button.click()
+
+print('Record Created!')
 
 time.sleep(100)
