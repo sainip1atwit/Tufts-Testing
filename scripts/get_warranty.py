@@ -1,6 +1,6 @@
 import time
-import pandas as pd
 import subprocess
+import pandas as pd
 from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -80,6 +80,9 @@ def get_warranty():
 
         # Add Warranty Information to Dataframe
         df.loc[df['Serial Number'] == serial_number, ['Warranty Start', 'Warranty End']] = [warranty_start, warranty_end]
+
+        # Add the config name
+        df.loc[df['Serial Number'] == serial_number, ['Config Name']] = 'GVHOSL' + str(row['Asset Tag'])
 
         driver.refresh()
         time.sleep(3)

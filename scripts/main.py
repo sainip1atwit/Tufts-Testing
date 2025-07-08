@@ -1,3 +1,3 @@
-from get_warranty import get_warranty
+from create_record import create_records
 
-get_warranty()
+create_records()
